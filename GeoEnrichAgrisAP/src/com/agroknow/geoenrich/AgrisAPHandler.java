@@ -41,6 +41,7 @@ public class AgrisAPHandler
         	
         	System.out.println("----------------------------");
 
+        	writeInitialize(only_filename, output);
         	for (int temp = 0; temp < nList.getLength(); temp++) 
         	{
 
@@ -86,10 +87,11 @@ public class AgrisAPHandler
 	                    		}
 	        				}
 	        				pop();
+	        				write(only_filename, output);
                 		}
         				
 
-        	        	write(only_filename, output);
+        	        	
         				
         			}
         			
@@ -114,13 +116,13 @@ public class AgrisAPHandler
 		if(stack.get(stack.size()-1).equals("ags:resource"))
 			return;
 		
-		to_write+="</"+stack.get(stack.size()-1)+">";
+		to_write+="\n\t</"+stack.get(stack.size()-1)+">";
 		stack.remove(stack.size()-1);
 	}
 	
 	private void update(Node element)
 	{
-		to_write+="\n<";
+		to_write+="\n\t<";
 		
 		String node_name=element.getNodeName();
 		to_write+=node_name;
@@ -253,7 +255,7 @@ public class AgrisAPHandler
 		}
 		
 	}
-	
+
 	private void write(String filename, String output)
 	{
 		File file =new File(output, filename);
@@ -282,6 +284,38 @@ public class AgrisAPHandler
 		}
         
         to_write="";
+	}
+
+	private void writeInitialize(String filename, String output)
+	{
+		File file =new File(output, filename);
+		
+		String header="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
+				"<!DOCTYPE ags:resources SYSTEM \"http://purl.org/agmes/agrisap/dtd/\">"+
+				"<ags:resources xmlns:ags=\"http://purl.org/agmes/1.1/\" "
+				+ "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+				+ "xmlns:agls=\"http://www.naa.gov.au/recordkeeping/gov_online/agls/1.2\" "
+				+ "xmlns:dcterms=\"http://purl.org/dc/terms/\">\n";
+		FileWriter fileWritter = null;
+		try {
+			fileWritter = new FileWriter(file.getAbsolutePath(),true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+        try {
+			bufferWritter.write(header);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			bufferWritter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void finalize(String filename, String output)
