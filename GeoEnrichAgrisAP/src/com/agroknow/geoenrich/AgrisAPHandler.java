@@ -35,7 +35,7 @@ public class AgrisAPHandler
         	doc.getDocumentElement().normalize();
         	
         	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-        	System.out.println("ToString method call:" + doc.getDocumentElement().getTextContent());
+        	//System.out.println("ToString method call:" + doc.getDocumentElement().getTextContent());
         			
         	NodeList nList = doc.getElementsByTagName("ags:resources");
         	
@@ -47,7 +47,7 @@ public class AgrisAPHandler
 
         		Node nNode = nList.item(temp);
         		
-        		System.out.println("\nCurrent Element :" + nNode.getNodeName());
+        		//System.out.println("\nCurrent Element :" + nNode.getNodeName());
         		
         		if (nNode.getNodeType() == Node.ELEMENT_NODE) 
         		{
