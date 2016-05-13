@@ -27,6 +27,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.common.base.Optional;
+import com.optimaize.langdetect.LanguageDetector;
+import com.optimaize.langdetect.LanguageDetectorBuilder;
+import com.optimaize.langdetect.ngram.NgramExtractors;
+import com.optimaize.langdetect.profiles.LanguageProfile;
+import com.optimaize.langdetect.profiles.LanguageProfileReader;
+import com.optimaize.langdetect.text.CommonTextObjectFactories;
+import com.optimaize.langdetect.text.TextObject;
+import com.optimaize.langdetect.text.TextObjectFactory;
+
 public class AgrisAPHandler 
 {
 	String to_write="";
@@ -35,6 +45,8 @@ public class AgrisAPHandler
 	String prefix="";
 	List<String> stack=new ArrayList<String>();
 	List<String> rights_list=new ArrayList<String>();
+	
+	boolean has_rights=false;
 	
 	public void generate(String filename, String output, String only_filename)
 	{
@@ -106,6 +118,11 @@ public class AgrisAPHandler
 	        						update(resource);
 		            				Element resource_element = (Element) resource;
 		            				
+		            				//System.out.println("ON THIS LVL:"+resource_element.getNodeName());
+		            				
+		            				if(resource_element.getNodeName().equals("dc:rights"))
+		            					has_rights=true;
+		            				
 		            				NodeList third_lvl=resource_element.getChildNodes();
 		            				for(int k=0;k<third_lvl.getLength();k++)
 		            				{
@@ -151,6 +168,7 @@ public class AgrisAPHandler
 	
 	private void update(Node element)
 	{
+		boolean have_attributes=false;
 		to_write+="\n\t<";
 		
 		String node_name=element.getNodeName();
@@ -164,13 +182,56 @@ public class AgrisAPHandler
 				
 				to_write+=" "+node.getNodeName()+"=\""+node.getNodeValue()+"\" ";
 				
-				
+				//if(node_name.equals("dc:title") || node_name.equals("dc:description"))
+				have_attributes=true;
 			}
 		}
 		catch(java.lang.NullPointerException e)
 		{
 			System.out.println("No attributes? for name:"+element.getNodeName());
 		}
+		
+		NodeList nlist=element.getChildNodes();
+		
+		if(!have_attributes && (node_name.equals("dc:title") || 
+					node_name.equals("dcterms:abstract") ||
+					node_name.equals("dcterms:alternative"))
+				&& !hasNodeChild(nlist))
+		{
+			//load all languages:
+			List<LanguageProfile> languageProfiles = null;
+			try {
+				languageProfiles = new LanguageProfileReader().readAll();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			//build language detector:
+			LanguageDetector languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
+			        .withProfiles(languageProfiles)
+			        .build();
+
+			//create a text object factory
+			TextObjectFactory textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
+
+			//query:
+			//System.out.println("I am trying to detect:"+element.getTextContent());
+			TextObject textObject = textObjectFactory.forText(element.getTextContent());
+			Optional<String> lang = languageDetector.detect(textObject);
+			
+			try
+			{
+				String iso2=lang.get();
+				if(!iso2.isEmpty() && iso2!="")
+					to_write+=" xml:lang=\""+iso2+"\"";
+			}
+			catch(java.lang.IllegalStateException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
 		to_write+=">\n";
 		
 		
@@ -189,21 +250,17 @@ public class AgrisAPHandler
 			
 		}*/
 		
-		NodeList nlist=element.getChildNodes();
+		
 		
 		System.out.println("Node named:"+element.getNodeName()+" has list length:"+nlist.getLength()+" and is named:"
 				+nlist.item(0).getNodeName());
 		
 		if(!hasNodeChild(nlist))
 		{
-			to_write+="<![CDATA["+element.getTextContent()+"]]>";
-			to_write+="</"+element.getNodeName()+">";
-			
-
-			if(node_name.equals("dc:title"))
+			if(node_name.equals("dc:title") || node_name.equals("dcterms:alternative"))
 			{
-				try {
-					
+				try 
+				{
 					System.out.println("Trying with:"+element.getNodeName()+" and value:"+element.getTextContent());
 					
 					searchGeo(element.getTextContent());
@@ -214,6 +271,8 @@ public class AgrisAPHandler
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				
 			}
 
 			if(node_name.equals("dcterms:abstract"))
@@ -231,6 +290,10 @@ public class AgrisAPHandler
 					e.printStackTrace();
 				}
 			}
+			
+			to_write+="<![CDATA["+element.getTextContent()+"]]>";
+			to_write+="</"+element.getNodeName()+">";
+			
 		}
 		else
 		{
@@ -325,9 +388,13 @@ public class AgrisAPHandler
 		File file =new File(output, filename);
 		
 		String data=to_write.replace("\n\n", "\n")+"\n"
-				+ "\t"+enrichments+"\n"
-				+ "\t"+rights+"\n"
-				+ "</ags:resource>";
+				+ "\t"+enrichments+"\n";
+		
+		
+		if(!has_rights)
+			data+= "\t"+rights+"\n";
+		
+		data+="</ags:resource>";
 		
 		FileWriter fileWritter = null;
 		try {
@@ -776,7 +843,7 @@ public class AgrisAPHandler
 	
 	void searchRights() throws Exception
 	{
-		prefix="RU0";
+		//prefix="RU0";
 		String url="http://www.akstem.com/centercode/"+prefix;
 	
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
