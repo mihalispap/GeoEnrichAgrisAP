@@ -1,16 +1,27 @@
 package com.agroknow.geoenrich;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,12 +30,28 @@ import org.w3c.dom.NodeList;
 public class AgrisAPHandler 
 {
 	String to_write="";
+	String rights="";
+	String enrichments="";
+	String prefix="";
 	List<String> stack=new ArrayList<String>();
+	List<String> rights_list=new ArrayList<String>();
 	
 	public void generate(String filename, String output, String only_filename)
 	{
 		try {
 
+			try
+			{
+				System.out.println(only_filename);
+				prefix=only_filename.substring(0,2)+only_filename.charAt(6);
+				if(!prefix.isEmpty() && prefix!="")
+					searchRights();
+			}
+			catch(java.lang.Exception e)
+			{
+				e.printStackTrace();
+			}
+			
         	File fXmlFile = new File(filename);
         	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -41,10 +68,14 @@ public class AgrisAPHandler
         	
         	System.out.println("----------------------------");
 
+        	//TODO:
+        	//	<dc:rights><ags:rightsTermsOfUse>
+        	
+        	
         	writeInitialize(only_filename, output);
         	for (int temp = 0; temp < nList.getLength(); temp++) 
         	{
-
+        		
         		Node nNode = nList.item(temp);
         		
         		//System.out.println("\nCurrent Element :" + nNode.getNodeName());
@@ -57,6 +88,7 @@ public class AgrisAPHandler
         			NodeList node_list = eElement.getChildNodes();
         			for(int i=0;i<node_list.getLength();i++)
         			{
+        				enrichments="";
         				Node node=node_list.item(i);
         				
         				
@@ -89,9 +121,6 @@ public class AgrisAPHandler
 	        				pop();
 	        				write(only_filename, output);
                 		}
-        				
-
-        	        	
         				
         			}
         			
@@ -134,6 +163,8 @@ public class AgrisAPHandler
 				Node node = element.getAttributes().item(i);
 				
 				to_write+=" "+node.getNodeName()+"=\""+node.getNodeValue()+"\" ";
+				
+				
 			}
 		}
 		catch(java.lang.NullPointerException e)
@@ -167,6 +198,39 @@ public class AgrisAPHandler
 		{
 			to_write+="<![CDATA["+element.getTextContent()+"]]>";
 			to_write+="</"+element.getNodeName()+">";
+			
+
+			if(node_name.equals("dc:title"))
+			{
+				try {
+					
+					System.out.println("Trying with:"+element.getNodeName()+" and value:"+element.getTextContent());
+					
+					searchGeo(element.getTextContent());
+				} catch (DOMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			if(node_name.equals("dcterms:abstract"))
+			{
+				try {
+					
+					System.out.println("Trying with:"+element.getNodeName()+" and value:"+element.getTextContent());
+					
+					searchGeo(element.getTextContent());
+				} catch (DOMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		else
 		{
@@ -260,7 +324,10 @@ public class AgrisAPHandler
 	{
 		File file =new File(output, filename);
 		
-		String data=to_write+"\n</ags:resource>";
+		String data=to_write.replace("\n\n", "\n")+"\n"
+				+ "\t"+enrichments+"\n"
+				+ "\t"+rights+"\n"
+				+ "</ags:resource>";
 		
 		FileWriter fileWritter = null;
 		try {
@@ -320,6 +387,9 @@ public class AgrisAPHandler
 	
 	private void finalize(String filename, String output)
 	{
+		
+		
+		
 		File file =new File(output, filename);
 		
 		String data="</ags:resources>";
@@ -347,8 +417,472 @@ public class AgrisAPHandler
 	}
 	
 	
+	void searchGeo(String value_total) throws Exception
+	{
+		String[] value=value_total.split(" ");
+		
+		String absolute_path=System.getProperty("user.dir")+System.getProperty("file.separator")+""
+				+ "assets"+System.getProperty("file.separator");
+		
+		List<String> coverages=new ArrayList<String>();
+		
+		/*
+		 * 	TODO: 
+		 * 		rethink about case sensitive/insensitive
+		 * 
+		 * */
+		for(int j=0;j<value.length;j++)
+		{
+			value[j]=value[j].replace(",", "");
+			value[j]=value[j].replace("(", "");
+			value[j]=value[j].replace(")", "");
+			
+			FileInputStream fstream = new FileInputStream(absolute_path+"continents.db");
+			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+			String strLine;
+			while ((strLine = br.readLine()) != null)   
+			{
+
+				String[] geonames=strLine.split("\t");
+			  
+				boolean found=false;
+				String geonames_id="";
+
+				if(value[j].equalsIgnoreCase(geonames[1]))
+				{
+						found=true;
+						//geonames_id=geonames[2];
+				}
+				if(found)
+				{
+					coverages.add(geonames[1]);
+					//break;
+				}
+				found=false;
+				if(j!=value.length-1)
+				{
+					
+					String to_check=value[j]+" "+value[j+1];
+					if(to_check.equalsIgnoreCase(geonames[1]))
+					{
+							found=true;
+							//geonames_id=geonames[2];
+					}
+					if(found)
+					{
+						coverages.add(geonames[1]);
+						//break;
+					}
+				}
+				found=false;
+			}
+			br.close();
+			
+			fstream = new FileInputStream(absolute_path+"countries.db");
+			br = new BufferedReader(new InputStreamReader(fstream));
+			while ((strLine = br.readLine()) != null)   
+			{
+
+				String[] geonames=strLine.split("\t");
+			  
+				boolean found=false;
+				String geonames_id="";
+				
+				if(value[j].equalsIgnoreCase(geonames[4]))
+				{
+						found=true;
+						geonames_id=geonames[16];
+				}
+				if(found)
+				{
+					coverages.add(geonames[4]);
+					//break;
+				}
+
+				found=false;
+				if(j!=value.length-1)
+				{
+					String to_check=value[j]+" "+value[j+1];
+					if(to_check.equalsIgnoreCase(geonames[4]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[4]);
+						//break;
+					}
+				}
+
+				found=false;
+			}
+			br.close();
+
+			fstream = new FileInputStream(absolute_path+"null.txt");
+			br = new BufferedReader(new InputStreamReader(fstream));
+			while ((strLine = br.readLine()) != null)   
+			{
+
+				String[] geonames=strLine.split("\t");
+			  
+				boolean found=false;
+				String geonames_id="";
+				
+				if(value[j].equalsIgnoreCase(geonames[1]))
+				{
+						found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[1]);
+					//break;
+				}
+				found=false;
+								
+				if(j!=value.length-1)
+				{
+					String to_check=value[j]+" "+value[j+1];
+					
+					//if(to_check.contains("Aegean") && geonames[1].contains("Aegean"))
+					//	System.out.println("Checking...\n...:"+to_check+", wt:"+geonames[1]);
+					if(to_check.equalsIgnoreCase(geonames[1]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[1]);
+						//break;
+					}
+					found=false;
+					
+				}
+				found=false;
+			}
+			br.close();
+			
+			
+		}
+			/*fstream = new FileInputStream(absolute_path+"cities1000.txt");
+			br = new BufferedReader(new InputStreamReader(fstream));
+			while ((strLine = br.readLine()) != null)   
+			{
+
+				String[] geonames=strLine.split("\t");
+			  
+				boolean found=false;
+				String geonames_id="";
+				
+				if(value[j].equalsIgnoreCase(geonames[1]))
+				{
+						found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[1]);
+					//break;
+				}
+				found=false;
+				
+				if(value[j].equalsIgnoreCase(geonames[2]))
+				{
+					found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[2]);
+					//break;
+				}
+				found=false;
+				
+				if(j!=value.length-1)
+				{
+					String to_check=value[j]+" "+value[j+1];
+					if(to_check.equalsIgnoreCase(geonames[1]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[1]);
+						//break;
+					}
+					found=false;
+					if(to_check.equalsIgnoreCase(geonames[2]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[2]);
+						//break;
+					}
+					
+				}
+				found=false;
+			}
+			br.close();
+			
+
+			fstream = new FileInputStream(absolute_path+"cities5000.txt");
+			br = new BufferedReader(new InputStreamReader(fstream));
+			while ((strLine = br.readLine()) != null)   
+			{
+
+				String[] geonames=strLine.split("\t");
+			  
+				boolean found=false;
+				String geonames_id="";
+				
+				if(value[j].equalsIgnoreCase(geonames[1]))
+				{
+						found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[1]);
+					//break;
+				}
+				found=false;
+				
+				if(value[j].equalsIgnoreCase(geonames[2]))
+				{
+					found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[2]);
+					//break;
+				}
+				found=false;
+				
+				if(j!=value.length-1)
+				{
+					String to_check=value[j]+" "+value[j+1];
+					if(to_check.equalsIgnoreCase(geonames[1]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[1]);
+						//break;
+					}
+					found=false;
+					if(to_check.equalsIgnoreCase(geonames[2]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[2]);
+						//break;
+					}
+					
+				}
+				found=false;
+			}
+			br.close();
+			
+
+			fstream = new FileInputStream(absolute_path+"cities15000.txt");
+			br = new BufferedReader(new InputStreamReader(fstream));
+			while ((strLine = br.readLine()) != null)   
+			{
+
+				String[] geonames=strLine.split("\t");
+			  
+				boolean found=false;
+				String geonames_id="";
+				
+				if(value[j].equalsIgnoreCase(geonames[1]))
+				{
+						found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[1]);
+					//break;
+				}
+				found=false;
+				
+				if(value[j].equalsIgnoreCase(geonames[2]))
+				{
+					found=true;
+				}
+				if(found)
+				{
+					coverages.add(geonames[2]);
+					//break;
+				}
+				found=false;
+				
+				if(j!=value.length-1)
+				{
+					String to_check=value[j]+" "+value[j+1];
+					if(to_check.equalsIgnoreCase(geonames[1]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[1]);
+						//break;
+					}
+					found=false;
+					if(to_check.equalsIgnoreCase(geonames[2]))
+					{
+							found=true;
+							//geonames_id=geonames[16];
+					}
+					if(found)
+					{
+						coverages.add(geonames[2]);
+						//break;
+					}
+					
+				}
+				found=false;
+			}
+			br.close();
+			
+
+			 */
+		
+		
+		for(int i=0;i<coverages.size();i++)
+		{
+			int j;
+			for(j=i+1;j<coverages.size();j++)
+			{
+				if(coverages.get(j).equals(coverages.get(i)))
+					break;
+			}
+			if(j==coverages.size())
+				enrichments+="\t<dc:coverage>"+coverages.get(i)+"</dc:coverage>\n";
+		}
+		
+		//enrichments+="<dc:coverage>foundsomething..</dc:coverage>";
+		
+	}
 	
+	void searchRights() throws Exception
+	{
+		prefix="RU0";
+		String url="http://www.akstem.com/centercode/"+prefix;
 	
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(new URL(url).openStream());
+
+		
+		doc.getDocumentElement().normalize();
+    	
+    	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+    	//System.out.println("ToString method call:" + doc.getDocumentElement().getTextContent());
+    			
+    	NodeList nList = doc.getElementsByTagName("nodes");
+    	for (int temp = 0; temp < nList.getLength(); temp++) 
+    	{
+    		Node nNode = nList.item(temp);
+
+    		if (nNode.getNodeType() == Node.ELEMENT_NODE) 
+    		{    			
+    			Element eElement = (Element) nNode;    			
+    			NodeList node_list = eElement.getChildNodes();
+    			for(int i=0;i<node_list.getLength();i++)
+    			{
+    				Node node=node_list.item(i);	    				
+    				if (node.getNodeType() == Node.ELEMENT_NODE) 
+            		{    					
+    					Element eElementInner = (Element) node;    			
+    	    			NodeList node_list_inner = eElementInner.getChildNodes();
+    	    			for(int j=0;j<node_list_inner.getLength();j++)
+    	    			{
+    	    				Node title_rights=node_list_inner.item(j);	    				
+    	    				if (title_rights.getNodeType() == Node.ELEMENT_NODE) 
+    	            		{
+    	    					//System.out.println("XML read node:"+title_rights.getNodeName());
+    	    					if(title_rights.getNodeName().equals("rights"))
+    	    					{
+    	    						rights_list.add(title_rights.getTextContent());
+    	    					}
+    	            		}
+    	    			}
+            		}
+    			}
+    		}
+    	}
+    	
+    	if(!rights_list.isEmpty())
+    	{
+    		String stricter="";
+    		int score=0;
+    		for(int i=0;i<rights_list.size();i++)
+    		{
+    			String current=rights_list.get(i);
+    			/*
+    			 * 
+    			 	Free access							40
+					Full text							50
+					Open Access							60
+					Some resources free					70
+					Full text limited to Institution	80
+					Paid - subscription					90
+					Paid - per item						100
+    			 * 
+    			 */
+    			if(current.equals("Paid - per item") && score<100)
+    			{
+    				score=100;
+    				stricter=current;
+    				break;
+    			}
+    			else if(current.equals("Paid - subscription") && score<90)
+    			{
+    				score=90;
+    				stricter=current;
+    			}
+    			else if(current.equals("Full text limited to Institution") && score<80)
+    			{
+    				score=80;
+    				stricter=current;
+    			}
+    			else if(current.equals("Some resources free") && score<70)
+    			{
+    				score=70;
+    				stricter=current;
+    			}
+    			else if(current.equals("Open Access") && score<60)
+    			{
+    				score=60;
+    				stricter=current;
+    			}
+    			else if(current.equals("Full text") && score<50)
+    			{
+    				score=50;
+    				stricter=current;
+    			}
+    			else if(current.equals("Free access") && score<40)
+    			{
+    				score=40;
+    				stricter=current;
+    			}
+    		}
+    		System.out.println("STRICTER"+stricter);
+    		
+    		if(!stricter.isEmpty() && stricter!="")
+    			rights="<dc:rights>"+stricter+"</dc:rights>";
+    	}
+	}
 }
 
 

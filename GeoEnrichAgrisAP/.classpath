@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="C:/Users/Mihalis/git/GeoEnrichAgrisAP/GeoEnrichAgrisAP/lib/SimpleValidation.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mihalis/git/GeoEnrichAgrisAP/GeoEnrichAgrisAP/lib/uiuc_oai_bramv5.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mihalis/git/GeoEnrichAgrisAP/GeoEnrichAgrisAP/lib/xalan-2.7.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Mihalis/git/GeoEnrichAgrisAP/GeoEnrichAgrisAP/lib/hessian-4.0.37.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
