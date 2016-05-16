@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Optional;
 import com.optimaize.langdetect.LanguageDetector;
 import com.optimaize.langdetect.LanguageDetectorBuilder;
+import com.optimaize.langdetect.i18n.LdLocale;
 import com.optimaize.langdetect.ngram.NgramExtractors;
 import com.optimaize.langdetect.profiles.LanguageProfile;
 import com.optimaize.langdetect.profiles.LanguageProfileReader;
@@ -217,14 +218,14 @@ public class AgrisAPHandler
 
 			//query:
 			//System.out.println("I am trying to detect:"+element.getTextContent());
-			TextObject textObject = textObjectFactory.forText(element.getTextContent());
-			Optional<String> lang = languageDetector.detect(textObject);
+			TextObject textObject = textObjectFactory.forText(element.getTextContent().toLowerCase());
+			Optional<LdLocale> lang = languageDetector.detect(textObject);
 			
 			try
 			{
-				String iso2=lang.get();
+				String iso2=lang.get().getLanguage();
 				if(!iso2.isEmpty() && iso2!="")
-					to_write+=" xml:lang=\""+iso2+"\"";
+					to_write+=" xml:lang=\""+iso2+languageDetector.getProbabilities(textObject)+"\"";
 			}
 			catch(java.lang.IllegalStateException e)
 			{
