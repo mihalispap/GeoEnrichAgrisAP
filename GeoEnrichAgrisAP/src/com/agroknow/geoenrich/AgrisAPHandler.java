@@ -835,6 +835,9 @@ public class AgrisAPHandler
 		{
 			int j=0;
 			
+			if(coverages.get(i).equals("Country"))
+				continue;
+			
 			if(!enrichments.contains("<![CDATA["+coverages.get(i)+"]]>"))
 				enrichments+="\t<dc:coverage><![CDATA["+coverages.get(i)+"]]></dc:coverage>\n";
 			
