@@ -47,6 +47,8 @@ public class AgrisAPHandler
 	List<String> stack=new ArrayList<String>();
 	List<String> rights_list=new ArrayList<String>();
 	
+	List<String> coverages=new ArrayList<String>();
+	
 	boolean has_rights=false;
 	
 	public void generate(String filename, String output, String only_filename)
@@ -102,6 +104,7 @@ public class AgrisAPHandler
         			for(int i=0;i<node_list.getLength();i++)
         			{
         				enrichments="";
+        				coverages=new ArrayList<String>();
         				Node node=node_list.item(i);
         				
         				
@@ -225,7 +228,7 @@ public class AgrisAPHandler
 			{
 				String iso2=lang.get().getLanguage();
 				if(!iso2.isEmpty() && iso2!="")
-					to_write+=" xml:lang=\""+iso2+languageDetector.getProbabilities(textObject)+"\"";
+					to_write+=" xml:lang=\""+iso2/*+languageDetector.getProbabilities(textObject)*/+"\"";
 			}
 			catch(java.lang.IllegalStateException e)
 			{
@@ -233,7 +236,7 @@ public class AgrisAPHandler
 			}
 		}
 		
-		to_write+=">\n";
+		to_write+=">";
 		
 		
 		/*while(true)
@@ -492,7 +495,7 @@ public class AgrisAPHandler
 		String absolute_path=System.getProperty("user.dir")+System.getProperty("file.separator")+""
 				+ "assets"+System.getProperty("file.separator");
 		
-		List<String> coverages=new ArrayList<String>();
+		
 		
 		/*
 		 * 	TODO: 
@@ -825,19 +828,36 @@ public class AgrisAPHandler
 
 			 */
 		
+		//if(true)
+		//	return;
 		
-		for(int i=0;i<coverages.size();i++)
+		for(int i=0;i<coverages.size()/* && coverages.size()!=1*/;i++)
 		{
-			int j;
+			int j=0;
+			
+			if(!enrichments.contains("<![CDATA["+coverages.get(i)+"]]>"))
+				enrichments+="\t<dc:coverage><![CDATA["+coverages.get(i)+"]]></dc:coverage>\n";
+			
+			/*
+			 * System.out.println("I:"+i+":cvrgSize:"+coverages.size()+":");
+			
 			for(j=i+1;j<coverages.size();j++)
 			{
+				System.out.println("Comparing:"+coverages.get(j)+":with:"+coverages.get(i)+":");
 				if(coverages.get(j).equals(coverages.get(i)))
+				{
+					System.out.println("FOUND MATCH: @"+coverages.get(j)+":with j:"+j);
 					break;
+				}
 			}
+			System.out.println("Going to compare:"+j+", with:"+coverages.size());
 			if(j==coverages.size())
-				enrichments+="\t<dc:coverage>"+coverages.get(i)+"</dc:coverage>\n";
+				enrichments+="\t<dc:coverage><![CDATA["+coverages.get(i)+"]]>"+value_total+"</dc:coverage>\n";
+				*/
 		}
 		
+		/*if(coverages.size()==1)
+			enrichments+="\t<dc:coverage><![CDATA["+coverages.get(0)+"]]>"+value_total+"</dc:coverage>\n";*/
 		//enrichments+="<dc:coverage>foundsomething..</dc:coverage>";
 		
 	}
@@ -948,7 +968,7 @@ public class AgrisAPHandler
     		System.out.println("STRICTER"+stricter);
     		
     		if(!stricter.isEmpty() && stricter!="")
-    			rights="<dc:rights>"+stricter+"</dc:rights>";
+    			rights="<dc:rights><![CDATA["+stricter+"]]></dc:rights>";
     	}
 	}
 }
