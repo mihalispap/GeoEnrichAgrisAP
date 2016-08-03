@@ -70,8 +70,13 @@ public class AgrisAPHandler
         	File fXmlFile = new File(filename);
         	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        	Document doc = dBuilder.parse(fXmlFile);
-        			
+        	
+        	//Document doc = dBuilder.parse(fXmlFile);
+        		
+        	FileInputStream in = new FileInputStream(fXmlFile);
+        	Document doc = dBuilder.parse(in, "UTF-8");
+        	
+        	
         	//optional, but recommended
         	//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
         	doc.getDocumentElement().normalize();
@@ -150,11 +155,14 @@ public class AgrisAPHandler
         	}
         	
         	finalize(only_filename, output);
+        	
+        	in.close();
         } 
         catch (Exception e) 
         {
         	e.printStackTrace();
         }
+		
           
 	}
 	
@@ -256,8 +264,8 @@ public class AgrisAPHandler
 		
 		
 		
-		System.out.println("Node named:"+element.getNodeName()+" has list length:"+nlist.getLength()+" and is named:"
-				+nlist.item(0).getNodeName());
+		//System.out.println("Node named:"+element.getNodeName()+" has list length:"+nlist.getLength()+" and is named:"
+		//		+nlist.item(0).getNodeName());
 		
 		if(!hasNodeChild(nlist))
 		{
@@ -298,11 +306,14 @@ public class AgrisAPHandler
 			to_write+="<![CDATA["+element.getTextContent()+"]]>";
 			to_write+="</"+element.getNodeName()+">";
 			
+		
+			
 		}
 		else
 		{
 			stack.add(element.getNodeName());
 		}
+		
 	}
 	
 	private boolean hasNodeChild(NodeList nlist)
@@ -490,6 +501,13 @@ public class AgrisAPHandler
 	
 	void searchGeo(String value_total) throws Exception
 	{
+		value_total=value_total.replace(":", "");
+		value_total=value_total.replace(",", "");
+		value_total=value_total.replace(".", "");
+		value_total=value_total.replace(";", "");
+		value_total=value_total.replace("?", "");
+		value_total=value_total.replace("!", "");
+		
 		String[] value=value_total.split(" ");
 		
 		String absolute_path=System.getProperty("user.dir")+System.getProperty("file.separator")+""
