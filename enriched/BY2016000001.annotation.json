@@ -1,0 +1,101 @@
+{"enriched":{
+	"arn":"BY2016000001",
+	"language":[{"value":"ru","uri":["http://lexvo.org/id/code/ru"],"score":1.0,"vocabulary":["lexvo"]
+	},
+	{"value":"en", "uri":["http://lexvo.org/id/code/en"],"score":1.0,"vocabulary":["lexvo"]
+	}],
+	"location":[{"value":"belarus","uri":["http://sws.geonames.org/630336"],"score":1.0,"vocabulary":["geonames"]
+	}],
+	"subject":[{"value":"урожайность","uri":["http://aims.fao.org/aos/agrovoc/c_10176","http://id.agrisemantics.org/gacs/C108"],"score":1.0,"vocabulary":["agrovoc","gacs"]
+	},
+	{"value":"yield", "uri":["http://purl.obolibrary.org/obo/PATO_0000170"],"score":0.332456,"vocabulary":["Phenotypic Quality Ontology"]
+	},
+	{"value":"weight", "uri":["http://purl.obolibrary.org/obo/PATO_0000128","http://aims.fao.org/aos/agrovoc/c_8349","http://id.agrisemantics.org/gacs/C1657"],"score":1.0,"vocabulary":["Plant Trait Ontology","Phenotypic Quality Ontology","agrovoc","gacs"]
+	},
+	{"value":"variability", "uri":["http://purl.obolibrary.org/obo/PATO_0001303"],"score":0.25553292,"vocabulary":["Phenotypic Quality Ontology"]
+	},
+	{"value":"units", "uri":["http://aims.fao.org/aos/agrovoc/c_50324"],"score":1.0,"vocabulary":["agrovoc"]
+	},
+	{"value":"tendency", "uri":["http://purl.obolibrary.org/obo/PATO_0002360","http://purl.obolibrary.org/obo/PATO_0001727"],"score":0.25553292,"vocabulary":["Phenotypic Quality Ontology"]
+	},
+	{"value":"structure", "uri":["http://purl.obolibrary.org/obo/PATO_0000141","http://semanticscience.org/resource/SIO_000600","http://edamontology.org/data_0883","http://id.agrisemantics.org/gacs/C3518"],"score":1.0,"vocabulary":["Plant Trait Ontology","Phenotypic Quality Ontology","Environment Ontology","Semanticscience Integrated Ontology","EDAM bioinformatics operations, data types, formats, identifiers and topics","gacs"]
+	},
+	{"value":"statistics", "uri":["http://aims.fao.org/aos/agrovoc/c_49978"],"score":1.0,"vocabulary":["agrovoc"]
+	},
+	{"value":"statistic", "uri":["http://purl.obolibrary.org/obo/TRIPHASE_1803495793"],"score":0.332456,"vocabulary":["Thesaurus for Animal Physiology and Livestock Systems"]
+	},
+	{"value":"sowing", "uri":["http://aims.fao.org/aos/agrovoc/c_7268","http://id.agrisemantics.org/gacs/C1739"],"score":1.0,"vocabulary":["agrovoc","gacs"]
+	},
+	{"value":"seeds", "uri":["http://aims.fao.org/aos/agrovoc/c_6946","http://id.agrisemantics.org/gacs/C206"],"score":1.0,"vocabulary":["agrovoc","gacs"]
+	},
+	{"value":"second", "uri":["http://semanticscience.org/resource/SIO_000435","http://purl.obolibrary.org/obo/UO_0000010"],"score":0.25553292,"vocabulary":["Semanticscience Integrated Ontology","Experimental Factor Ontology"]
+	},
+	{"value":"region", "uri":["http://purl.obolibrary.org/obo/SO_0000001","http://purl.org/obo/owl/SO#SO_0000001","http://biohackathon.org/resource/faldo#Region","http://purl.obolibrary.org/obo/SO_0000839"],"score":0.25553292,"vocabulary":["Sequence Types and Features Ontology","Single-Nucleotide Polymorphism (SNP) Ontology","Feature Annotation Location Description Ontology","GENO Ontology"]
+	},
+	{"value":"rates", "uri":["http://id.agrisemantics.org/gacs/C13775"],"score":1.0,"vocabulary":["gacs"]
+	},
+	{"value":"rate", "uri":["http://purl.obolibrary.org/obo/PATO_0000161","http://opendata.inra.fr/resources/hSC9z#spleen","http://purl.obolibrary.org/obo/PATO_0001470"],"score":0.332456,"vocabulary":["Experimental Factor Ontology","Plant Trait Ontology","Phenotypic Quality Ontology","Population and Community Ontology","Environment Ontology","Matter transfer ontology"]
+	},
+	{"value":"quantitative", "uri":["http://purl.obolibrary.org/obo/PATO_0000070"],"score":0.23076923,"vocabulary":["Phenotypic Quality Ontology"]
+	},
+	{"value":"productivity", "uri":["http://aims.fao.org/aos/agrovoc/c_6210","http://id.agrisemantics.org/gacs/C1472","http://vitis.agroknow.com/taxonomy_term/10792"],"score":1.0,"vocabulary":["agrovoc","gacs","grape_varieties"]
+	},
+	{"value":"process", "uri":["http://semanticscience.org/resource/SIO_000006","http://purl.org/biotop/biotop.owl#Process","http://www.ifomis.org/bfo/1.1/span#Process","http://purl.obolibrary.org/obo/PATO_0000006","http://purl.obolibrary.org/obo/BFO_0000015","http://opendata.inra.fr/resources/PO2#biological_process","http://www.biointerchange.org/gfvo#Process","http://www.ifomis.org/bfo/1.1/span#ProcessualEntity","http://opendata.inra.fr/ms2o/Process","http://purl.obolibrary.org/obo/UBERON_0004529"],"score":0.25553292,"vocabulary":["Semanticscience Integrated Ontology","BioTop Ontology","Population and Community Ontology","Phenotypic Quality Ontology","GENO Ontology","Cell Ontology","Environment Ontology","Process and Observation Ontology","Genomic Feature and Variation Ontology","Experimental Factor Ontology","Multi-scale Multi-step ontology"]
+	},
+	{"value":"plant", "uri":["http://www.cropontology.org/rdf/CO_336:0000035","http://www.cropontology.org/rdf/CO_337:0000217","http://purl.obolibrary.org/obo/MBTO_00002027","http://purl.bioontology.org/ontology/STY/T002","http://purl.obolibrary.org/obo/OBT_000219","http://www.cropontology.org/rdf/CO_334:0100490","http://www.cropontology.org/rdf/CO_337:0000238","http://www.mistea.supagro.inra.fr/ontologies/2016/v4/ontofp#Plant","http://www.cropontology.org/rdf/CO_337:0000265","http://purl.org/biotop/biotop.owl#Plant","http://purl.obolibrary.org/obo/TP_0000039","http://www.mistea.supagro.inra.fr/ontologies/2015/oae#Plant","http://www.cropontology.org/rdf/CO_331:0000147"],"score":0.25553292,"vocabulary":["Soybean Ontology","Groundnut Ontology","OntoBiotope","National Center for Biotechnology Information (NCBI) Organismal Classification","Semantic Types Ontology","IBP Cassava Trait Ontology","Ontology for Food Processing Experiment","BioTop Ontology","Thesaurus for Animal Physiology and Livestock Systems","Ontology for Agricultural Experiments","Sweet Potato Ontology"]
+	},
+	{"value":"morphologie", "uri":["http://aims.fao.org/aos/agrovoc/c_49903","http://id.agrisemantics.org/gacs/C537"],"score":1.0,"vocabulary":["agrovoc","gacs"]
+	},
+	{"value":"morphological", "uri":["http://www.cropontology.org/rdf/CO_320:Morphological"],"score":0.25553292,"vocabulary":["IBP Rice Trait Ontology"]
+	},
+	{"value":"millet", "uri":["http://ontology.irstea.fr/cropusage/2016/06/Millets"],"score":0.37745312,"vocabulary":["French Crop Usage"]
+	},
+	{"value":"marked", "uri":["http://purl.obolibrary.org/obo/PATO_0000465"],"score":0.25553292,"vocabulary":["Phenotypic Quality Ontology"]
+	},
+	{"value":"length", "uri":["http://semanticscience.org/resource/SIO_000041","http://purl.obolibrary.org/obo/PATO_0000122","http://aims.fao.org/aos/agrovoc/c_4260","http://id.agrisemantics.org/gacs/C2382"],"score":1.0,"vocabulary":["Semanticscience Integrated Ontology","Plant Trait Ontology","Phenotypic Quality Ontology","Environment Ontology","agrovoc","gacs"]
+	},
+	{"value":"head", "uri":["http://purl.obolibrary.org/obo/UBERON_0000033","http://purl.obolibrary.org/obo/ENVO_01000535","http://purl.obolibrary.org/obo/PO_0009049","http://purl.obolibrary.org/obo/CO_320_0000088","http://purl.obolibrary.org/obo/ENVO_01000527","http://purl.obolibrary.org/obo/ENVO_00000305","http://purl.obolibrary.org/obo/ENVO_01000534","http://aims.fao.org/aos/agrovoc/c_3509","http://id.agrisemantics.org/gacs/C8105"],"score":1.0,"vocabulary":["Experimental Factor Ontology","Cell Ontology","Environment Ontology","Plant Ontology","IBP Rice Trait Ontology","agrovoc","gacs"]
+	},
+	{"value":"gram", "uri":["http://www.cropontology.org/rdf/CO_340:0000460","http://purl.obolibrary.org/obo/UO_0000021"],"score":0.25553292,"vocabulary":["IBP Cowpea Trait Ontology","Experimental Factor Ontology"]
+	},
+	{"value":"grain yield", "uri":["http://purl.obolibrary.org/obo/CO_320_0000073","http://www.cropontology.org/rdf/CO_321:0000013","http://purl.obolibrary.org/obo/CO_321_0000013","http://www.cropontology.org/rdf/CO_340:0000638","http://www.cropontology.org/rdf/CO_320:0000073","http://www.cropontology.org/rdf/CO_321:0000188","http://www.cropontology.org/rdf/CO_321:0000180","http://purl.obolibrary.org/obo/ID_0000038","http://id.agrisemantics.org/gacs/C2241"],"score":5.319296,"vocabulary":["IBP Rice Trait Ontology","IBP Wheat Trait Ontology","IBP Cowpea Trait Ontology","gacs"]
+	},
+	{"value":"grain weight", "uri":["http://purl.obolibrary.org/obo/CO_320_0000100","http://www.cropontology.org/rdf/CO_320:0000100","http://www.cropontology.org/rdf/CO_321:0000025","http://www.cropontology.org/rdf/CO_321:0000640","http://www.cropontology.org/rdf/CO_321:0000641"],"score":1.2776647,"vocabulary":["IBP Rice Trait Ontology","IBP Wheat Trait Ontology"]
+	},
+	{"value":"grain", "uri":["http://purl.obolibrary.org/obo/TP_0000367","http://purl.obolibrary.org/obo/PO_0009001","http://aims.fao.org/aos/agrovoc/c_3346","http://id.agrisemantics.org/gacs/C1825"],"score":1.0,"vocabulary":["Thesaurus for Animal Physiology and Livestock Systems","Plant Ontology","agrovoc","gacs"]
+	},
+	{"value":"field experimentation", "uri":["http://aims.fao.org/aos/agrovoc/c_33990"],"score":1.0,"vocabulary":["agrovoc"]
+	},
+	{"value":"field", "uri":["http://purl.obolibrary.org/obo/ENVO_00000114","http://purl.obolibrary.org/obo/ENVO_01000352","http://purl.obolibrary.org/obo/OBT_000069","http://www.mistea.supagro.inra.fr/ontologies/2015/oae#Plot","http://purl.obolibrary.org/obo/MBTO_00000261","http://purl.obolibrary.org/obo/UBERON_0007688"],"score":0.32076347,"vocabulary":["Environment Ontology","OntoBiotope","Ontology for Agricultural Experiments","Cell Ontology"]
+	},
+	{"value":"factors", "uri":["http://aims.fao.org/aos/agrovoc/c_331093"],"score":1.0,"vocabulary":["agrovoc"]
+	},
+	{"value":"facteur", "uri":["http://aims.fao.org/aos/agrovoc/c_331093"],"score":1.0,"vocabulary":["agrovoc"]
+	},
+	{"value":"elements", "uri":["http://aims.fao.org/aos/agrovoc/c_2526","http://id.agrisemantics.org/gacs/C9406"],"score":1.0,"vocabulary":["agrovoc","gacs"]
+	},
+	{"value":"echinochloa frumentacea", "uri":["http://aims.fao.org/aos/agrovoc/c_2454","http://purl.obolibrary.org/obo/GR_tax_012912","http://purl.bioontology.org/ontology/NCBITAXON/158098","http://id.agrisemantics.org/gacs/C19120"],"score":1.0,"vocabulary":["agrovoc","Gramene Taxonomy Ontology","National Center for Biotechnology Information (NCBI) Organismal Classification","gacs"]
+	},
+	{"value":"echinochloa", "uri":["http://purl.obolibrary.org/obo/GR_tax_012908","http://purl.bioontology.org/ontology/NCBITAXON/45618","http://id.agrisemantics.org/gacs/C11678"],"score":1.0,"vocabulary":["Gramene Taxonomy Ontology","National Center for Biotechnology Information (NCBI) Organismal Classification","gacs"]
+	},
+	{"value":"crop", "uri":["http://purl.obolibrary.org/obo/MBTO_00001555","http://purl.obolibrary.org/obo/MBTO_00000978","http://purl.obolibrary.org/obo/OBT_000092","http://purl.obolibrary.org/obo/PR_000005895"],"score":0.25553292,"vocabulary":["OntoBiotope","Protein Ontology"]
+	},
+	{"value":"correlation", "uri":["http://semanticscience.org/resource/SIO_000923","http://edamontology.org/correlation_3465","http://edamontology.org/operation_3465","http://id.agrisemantics.org/gacs/C1830"],"score":1.0,"vocabulary":["Semanticscience Integrated Ontology","EDAM bioinformatics operations, data types, formats, identifiers and topics","gacs"]
+	},
+	{"value":"characteristics", "uri":["http://id.agrisemantics.org/gacs/C1478"],"score":1.0,"vocabulary":["gacs"]
+	},
+	{"value":"champ", "uri":["http://purl.obolibrary.org/obo/PR_000031109"],"score":0.23076923,"vocabulary":["Protein Ontology"]
+	},
+	{"value":"case", "uri":["http://purl.obolibrary.org/obo/PR_000034142"],"score":0.30769232,"vocabulary":["Protein Ontology"]
+	},
+	{"value":"capacity", "uri":["http://id.agrisemantics.org/gacs/C6371"],"score":1.0,"vocabulary":["gacs"]
+	},
+	{"value":"belarus", "uri":["http://id.agrisemantics.org/gacs/C151"],"score":1.0,"vocabulary":["gacs"]
+	},
+	{"value":"barnyard millet", "uri":["http://aims.fao.org/aos/agrovoc/c_2454"],"score":1.0,"vocabulary":["agrovoc"]
+	},
+	{"value":"association", "uri":["http://semanticscience.org/resource/SIO_000897","http://purl.obolibrary.org/obo/VariO_0278","http://purl.org/oban/association"],"score":0.25553292,"vocabulary":["Semanticscience Integrated Ontology","Variation Ontology","GENO Ontology"]
+	},
+	{"value":"analysis", "uri":["http://edamontology.org/operation_2945","http://aims.fao.org/aos/agrovoc/c_49928","http://id.agrisemantics.org/gacs/C716"],"score":1.0,"vocabulary":["EDAM bioinformatics operations, data types, formats, identifiers and topics","agrovoc","gacs"]
+	}]
+	}}
