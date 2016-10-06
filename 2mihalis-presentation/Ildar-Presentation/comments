@@ -1,0 +1,238 @@
+slide 3
+
+Publish-subscribe systems, used for information distribution, consist of several components, out of which filtering engine is the most important one. Examples of data disseminated by the following systems include news, blog updates, financial data and many other types of deliverable content.
+
+Adoption of the XML as the standard format for message exchange allowed to use Xpath expressions to filter particular message based on it’s content as well as on it’s structure.
+
+However existing pub-sub systems are not capable to of effective scaling, which is required because of growing amount of information. Therefore massively parallel approaches for XML filtering should be proposed.
+
+
+slide4
+
+A number of previous research works study the problem of XML filtering using software methods. They could be divided into 3 groups.
+
+The first uses final-state machines to match Xpath queries against given documents. Query is considered to be matched if final state of FSM is reached
+
+Xfilter converts each query into FSM, where query node corresponds to individual state in one of the FSMs.
+
+Yfilter exploits commonalities between queries to construct single nondeterministic final automaton.
+
+LazyDFA uses deterministic automaton representation, constructed in lazy way.
+
+Xpush create pushdown automaton for the same purposes.
+
+
+slide5
+
+The second type - sequence-based approaches is represented by FiST, which converts XML document and queries into Prufer sequences and applies substring search algorithm with additional postprocessing to determine if the original query was matched.
+
+Lastly, the third type of software consist of systems, which use different indexing techniques to match Xpath queries. Xtrie builds a trie-like index to match query prefix. Afilter uses couple of similar indexes, to match query prefix as well as it’s suffix.
+
+
+
+
+slide 6
+
+A number of our previous works studies hardware approaches to solve stated problem.
+
+The first paper proposed streaming dynamic programming approach for XML path filtering and proposed FPGA implementation of this algorithm.
+
+ICDE paper extended this work by supporting twig queries.
+
+Paper presented on ADMS in 2011 used original approach to implement path filtering system on GPUs
+
+All these works on hardware acceleration of XML filtering showed significant speedup over state-of-the-art software analogs.
+
+
+slide7
+
+The following work studies the problem of holistic XML twig filtering on GPUs.
+
+The nature of the problem allows it to fully leverage massively parallel GPU hardware architecture for this task.
+
+In ICDE paper we have already studied problem of twig filtering on FPGAs, but despite the significant speedup, which we were able to achieve on FPGAs, this approach had some significant drawbacks.
+
+Firstly FPGA chip real estate is expensive, therefore the number of queries, which we can filter is limited.
+
+The second drawback is the lack of query dynamicity, since changing queries requires reprogramming of FPGA, the process which takes time, effort and cannot be done online
+
+
+slide8
+
+The proposed filtering approach requires some preliminary work.
+
+First of all we need to convert original XML document into a parsed stream, which will be fed to our algorithm.
+
+XML stream is obtained by using SAX XML parser, which traverses XML document and generates open(tag) event, whenever it reads opening of the tag, and close(tag) event in case when closing tag is observed.
+
+Twig filtering algorithm consists of two parts: a) matching individual root-to-leaf paths and b) reporting those matches back to root along with joining them at split nodes.
+
+
+slide9
+
+To capture those matches our algorithm uses dynamic programming strategy, where the role of dynamic programming table is played by binary stack – the stack containing only 0s and 1s (here and later in examples only 1s and shown, 0s are omitted for brevity).
+
+Stacks are generated during preprocessing step. Each stack is mapped to single XPath query. Every column within the stack is mapped to query node. The length of the stack is equal to the length of the query. Depth of the stack should be at least the maximum depth of XML document.
+
+During query parsing every node determines it’s prefix in the twig, which is saved as a stack column prefix pointer.
+
+Matches are always saved on the current top-of-the-stack (TOS). TOS is updated (increased of decreased) in reaction to events read from XML stream, open event translates into stack push operation, close event – into pop operation accordingly.
+
+
+
+slide10
+
+To perform two stages of the algorithm (root-to-leaf and reversed match propagation) we introduce 2 types of stacks: push stack and pop stack, which would capture matches for each algorithm stage accordingly.
+
+Values in the push stack are updated only in response to open events (on close event only TOS is decreased).
+
+On contrary values in pop stack are updated both on open and close events, where open forces values on pop stack TOS to be erased.
+
+
+slide11
+
+The following example shows match propagation rules in push stack.
+
+When the stack is generated from parsed XPath query the first column is reserved for dummy root node (which is referred as $). In the beginning of root-to-leaf path matching values on TOS for column corresponding to root node are set to 1, whereas all other values on TOS are 0.
+
+On open event 1 can be propagated diagonally upwards to the node’s column if
+a)it’s prefix column has 1 on the old TOS
+b)relationship between node and it’s prefix parent-child(/)
+c)tag in open event equals to the node’s tag name
+
+
+
+slide12
+
+(open(d) is omitted)
+
+In the case when node has wildcard tag (*) the same diagonal propagation rules apply, but tag name check is omitted.
+
+If the leaf node if matched it is saved in match array, which later will be used on the second phase of the algorithm.
+
+
+slide13
+
+To address ancestor-descendant semantics we introduce 1 upwards propagation, which applies if the following is true:
+a)node’s prefix has 1 on the old TOS
+b)Relationship between node and it’s prefix is ancestor-descendant(//)
+c)tag in open event equals to the node’s tag name
+
+Note that match is propagated not in node’s column, but in it’s prefix
+
+
+slide14
+
+Another example of upward diagonal propagation, where leaf node is saved in match array
+
+
+slide15
+
+Note that 1 do not propagate from node /a to /d despite the fact that all requirements for upwards diagonal propagation holds.
+
+The reason is the following: node /a is a split node and has 2 children: //c and /d with different types of parental relationships. In this case stack column for node /a is split into 2 columns: one for children with / relationship, and one for children with // relationship.
+
+In the example /a column have 0 in /-children field and 1 in //-children field on TOS. Since nodes /a and /d are connected with parent-child relationship only value from the respective field (which is 0 in this case) could be propagated.
+
+
+slide16
+
+The second phase of the algorithm saves it’s match information in pop stack.
+
+Propagation starts in leaf nodes, if this nodes where saved in match array during the 1st phase of the algorithm.
+
+On open event 1 can be propagated diagonally downwards to the node’s column if
+a)it’s prefix column has 1 on old TOS
+b)relationship between node and it’s prefix parent-child(/)
+c)tag in open event equals to the node’s prefix tag name or if node’s prefix tag is wildcard (as it is shown in example).
+
+
+
+
+slide17
+
+Strict downwards propagation, applies if the following is true:
+a)node’s has 1 on old TOS
+b)Relationship between node and it’s prefix is ancestor-descendant(//)
+c)tag in open event equals to the node’s tag name
+
+This time match is propagated in node’s column not in it’s prefix (unlike the same situation in push stack)
+
+
+
+
+slide18
+
+The following example shows the situation when we need to combine matches from several paths in a split node. Since we want to match twig holistically we 1 is propagated into prefix node if all it’s children have 1 on TOS simultaneously.
+
+Again since split node could have children with different parental relationships we need to take onto account /-children and //-children fields.
+
+
+slide19
+
+Finally 2nd phase of the algorithm is completed when dummy root node is matched.
+
+
+slide20
+
+GPUs have very specific architecture.
+
+It turns out that twig path filtering problem is especially well suited for this type of parallel architecture, since it uses several types of inherent parallelism, provided by GPUs:
+1)Intra-query parallelism allows us to evaluate all stack columns simultaneously, executing them on streaming processors (SP). This type of parallelism is useful because in practice thread block (a set of threads scheduled to execute in parallel) co-allocates several queries, thus all these queries obtain their result simultaneously.
+2)Inter-query parallelism allows concurrent scheduling of thread blocks on the set of streaming multiprocessors (SM), which again allows to execute queries in parallel, if they were not co-allocated in the same thread block in the first place.
+3)Concurrent kernel execution feature of the latest Fermi GPU architecture allows us to use inter-document parallelism. This mean several GPU kernels with different parameters (XML documents) could be executed in parallel.
+
+
+slide21
+
+To minimize slow communication between CPU and GPU all preprocessing (XML parsing, Xpath query parsing) is done on CPU side and transferred to GPU in compressed format.
+
+XML document is represented as a stream of 1-byte-long XML event records. 1 bit of this record encodes type of XML event (either push or pop) and the rest 7 bits encode tag name of the event.
+
+Event streams reside in the pre-allocated buffer in GPU global memory.
+
+
+slide22
+
+Since GPU kernel is the code, executed by each query node we need to store node-specific information in some parameter, which is passed to GPU kernel. This parameter is called personality. Personality is a 4-byte  record produced by Xpath query parser on CPU, which transmitted to GPU in the beginning of kernel execution.
+
+Personality stores all properties of particular query node: whether it is a leaf node or not, what parental relation (/ or //) it has with it’s prefix, if the node has children nodes this / or // relationship (in case when the node is a split node), pointer to the node’s prefix and tag name, corresponding to this node.
+
+
+slide23
+
+In the previous examples we have seen that there are certain cases (involving split nodes) where having a single stack field in the stack entry is not enough to correctly address the semantics of the situation. Thus every entry in our stacks have 2 fields for children with parent-child and ancestor-descendant relationship (note that we maintain this separation for all nodes, not only for split nodes).
+
+Since nodes capture match information for the whole query, which involves reading stack values from adjacent nodes we save stacks in shared memory, which can be accessed from every thread within a thread block (this imposes that queries could not cross thread block boundaries)
+
+
+
+slide24
+
+A number of specific optimizations were applied to maximize GPU performance.
+
+Firstly since stacks reside in shared memory, which is very limited in size we merge push and pop stacks into single data structure, however maintaining their logical separation.
+
+Coalescing accesses to global memory is another common GPU optimization technique, which decreases GPU bus contention. We use memory coalescing when GPU personality is read in the beginning of kernel execution.
+
+Since every thread within thread block reads the same XML stream it would be perfect if XML stream would reside in shared memory, however this is not possible due to tiny shared memory size. In order to tolerate this we cache small part of the stream into shared memory and loop through XML stream in strided manner, caching new block from the stream on each iteration.
+
+Finally to apply path merging semantic in the 2nd phase of the algorithm it is natural to call atomic functions to avoid race conditions. However our tests have shown that use of atomics results in huge performance drop, therefore we use a dedicated thread (split node thread) which executes merging logic in serial manner.
+
+
+slide25
+
+In the experimental evaluation we have used two GPUs (NVidia Tesla C2075 and NVidia Tesla K20) to compare the effect of different GPU architectures and different number of computational cores.
+
+As a reference implementation of software filtering system we have chosen YFilter engine as a state-of-the-art software filtering approach.
+
+To measure performance of software filtering he have used the server with two 6-core 2.30GHz Intel Xeon processors and 30 GB of memory.
+
+
+
+slide26
+
+As an experimental dataset we have used DBLP bibliography xml. To study the effect of document size we trimmed original dataset into chunks of variable size (32kB-2MB). We have also used synthetic 25kB XML documents, generated with ToXGene XML generator from DBLP DTD schema. Since maximum depth of the DBLP xml is known we limite depth of our stacks to 10.
+
+Query dataset was generated with YFilter XPath generator from DBLP DTD. We have used different parameters while generating queries to study their effect on XML filtering performance:
+1)

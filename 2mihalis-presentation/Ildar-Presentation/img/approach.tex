@@ -1,0 +1,105 @@
+
+\section{\poly\ Approach
+\label{approach}}
+
+As we wanted to improve \poly\ page-views and increase unique 
+visits to the production portal, we actively avoided during the 
+design of the engine to provide recommendations based on 
+widely used heuristics such as articles written by same (or similar) 
+authors, content in the same category and/or just popular items 
+within the portal.
+These techniques although effective at times, fail to consider 
+a reader's own interests at the time of browsing. In addition, 
+prior stated-preferences may be discarded and possible correlations 
+among categories might be overlooked.
+
+
+In \poly, we combine a number of techniques so that we can 
+present visitors with suggestions that not only fall within 
+the realm of their interests but they also are ``fresh''; 
+the notion of being ``fresh'' pertains to pages 
+that either have not been read so far or 
+may have appeared on the portal data infrastructure recently. 
+In this context, a key factor that we had to take into consideration 
+was the very large
+amount of data collected within a matter of minutes 
+in user activity.
+Effectively managing the inflow of information as well as 
+the outflow of the portal data constitutes a challenge.
+In an exploratory phase, we instrumented \vurl\ and measured 
+the average dwelling time for a visitor: we found it consistently 
+to be around $1$~\emph{second} using {\sl JavaScript} events.
+It is within this window of time that recommendations have 
+to be compiled and be timely shown to the reader so as 
+to increase page-view rates and consequently time spent 
+on \vurl.
+This timing benchmark also indicated that regardless of the 
+sophistication of the recommendation algorithm, if we take 
+longer times to generate suggestions this will render 
+the engine ineffective.
+In this case, the majority of visitors will fail 
+to receive both personalized and accurate recommendations 
+within the designated real-time slack.
+%%
+% 
+To accommodate the above requirement, \poly's design 
+follows a \emph{hybrid} approach 
+exploiting a variety of key operational aspects by:
+\begin{enumerate}
+	\item predominantly focusing on the responsiveness of such an engine,
+	\item being able to process important data flows and events real-time,
+	\item profiling both users and incoming pieces of content in a timely manner,
+	\item deploying effective features from traditional techniques
+		used in the \vurl\ engine to this date, 
+	\item training on--the--fly as much as possible while 
+		relegating off--line work for resource-intensive tasks only,
+	\item designing a system that can work in a plug-and-play fashion, 
+		regardless of the underlying infrastructure (i.e., database and content 
+		management systems used).
+\end{enumerate}
+All the above features influenced the design of \poly\ and led us to 
+deploy an engine that embeds multi-criteria in its core operation 
+with the time slack for all jobs taken continuously into account.
+In addition, we deploy a fail-over mechanism that addresses 
+issues introduced due to new content, users, content category re-alignment, 
+and classification re-adjustment.
+
+A number of factors influence the way \poly\ yields its suggestions and include:
+\begin{itemize}
+\item 
+the visitor's unique profile based on user-id and IP number,
+\item 	
+	articles whose categories are strongly related 
+	to content currently in browsing, 
+\item 
+	the time of day the visitor is browsing the portal,
+\item 
+	articles that share a high textual--similarity 
+	to the one currently being accessed,
+\item 
+	articles that are popular on this content--category today.
+\end{itemize}
+By default, each of the above criteria may equally contribute
+--in terms of weight--  
+to the outcomes computed by \poly. 
+In this regard, we seek to ensure the objectiveness of the evaluation 
+while we offer the capability 
+to appropriately gauge the weighting scheme so as 
+to provide content of timely interest. 
+Moreover, we want to offer warranties that \poly\ 
+regardless of the nature of the visitor and/or the item currently in browsing, 
+we can 
+locate suggestions even if one or more of the contributing 
+criteria fail to produce suggestions.
+In this case, the rest of the criteria will kick in 
+and help fill in the required quota for compiling 
+the list of the suggestions.
+
+We aspire to carry the necessary functionalities in real-time and 
+compute all required aspects on-the-fly in a way that the user 
+has the time to  view recommendations, evaluate their worthiness 
+and likely proceed to read one of those suggestions.
+If so, a new batch of recommendations is computed while 
+user clicks generate valuable input in term of the navigation 
+provided for our engine. 
+
